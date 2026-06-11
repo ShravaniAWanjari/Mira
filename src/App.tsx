@@ -29,11 +29,11 @@ function App() {
   useEffect(() => {
     // If environment is dark OR user is squinting, switch to Dark Mode
     if (environment === 'dark' || eyeState === 'strained') {
-      if (theme !== 'dark') setTheme('dark');
+      setTheme('dark');
     } else if (environment === 'bright' && eyeState === 'relaxed') {
-      if (theme !== 'light') setTheme('light');
+      setTheme('light');
     }
-  }, [environment, eyeState, theme]);
+  }, [environment, eyeState]); // Intentionally not including theme to prevent infinite loops and allow manual toggles
 
   return (
     <div className="min-h-screen flex flex-col">

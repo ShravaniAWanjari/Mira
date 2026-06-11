@@ -18,7 +18,7 @@ export default function CalendarCard() {
         </div>
       </div>
       
-      <div className="p-4 bg-white text-black flex-1 flex flex-col">
+      <div className="p-4 bg-transparent text-[var(--text-color)] flex-1 flex flex-col">
         <h4 className="font-bold text-xl mb-4 uppercase text-center">October</h4>
         
         <div className="grid grid-cols-7 gap-1 mb-2">

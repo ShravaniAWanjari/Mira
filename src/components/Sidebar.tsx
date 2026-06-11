@@ -106,22 +106,22 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
                     // Determine highlight color based on type
                     let borderColor = 'border-gray-600';
                     let textColor = 'text-gray-400';
+                    let bgColor = 'bg-zinc-950';
                     
                     if (isActive) {
                       if (log.type === 'dark' || log.type === 'bright') {
                         borderColor = 'border-[var(--secondary)]';
                         textColor = 'text-[var(--secondary)]';
+                        bgColor = 'bg-[var(--secondary)]/10';
                       } else if (log.type === 'strained' || log.type === 'relaxed') {
                         borderColor = 'border-[var(--primary)]';
                         textColor = 'text-[var(--primary)]';
+                        bgColor = 'bg-[var(--primary)]/10';
                       }
                     }
 
                     return (
-                      <div key={log.id} className={`border p-2 bg-zinc-950 text-sm flex items-start gap-2 ${borderColor}`}>
-                        {isActive && (log.type === 'dark' || log.type === 'strained') && (
-                          <span className={`w-2.5 h-2.5 mt-1 rounded-full animate-ping flex-shrink-0 ${log.type === 'dark' ? 'bg-[var(--secondary)]' : 'bg-[var(--primary)]'}`} />
-                        )}
+                      <div key={log.id} className={`border p-2 text-sm flex items-start gap-2 transition-colors ${borderColor} ${bgColor}`}>
                         <div className="flex flex-col">
                           <span className="text-[10px] text-gray-500 font-mono">{log.timestamp}</span>
                           <span className={`font-bold ${textColor}`}>{log.message}</span>
