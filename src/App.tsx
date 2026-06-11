@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import WorkspaceGrid from './components/WorkspaceGrid';
@@ -11,9 +11,11 @@ function App() {
     videoRef, 
     environment, 
     eyeState, 
+    facePresence,
     isInitializing, 
     isReady, 
-    startEngine 
+    startEngine,
+    resetEyeState
   } = useContextEngine();
 
   // Apply theme to document element for Tailwind dark mode class
@@ -25,19 +27,39 @@ function App() {
     }
   }, [theme]);
 
-  // Automatic Context Adaptation Logic
+  const latestEyeState = useRef(eyeState);
   useEffect(() => {
-    // If environment is dark OR user is squinting, switch to Dark Mode
-    if (environment === 'dark' || eyeState === 'strained') {
+    latestEyeState.current = eyeState;
+  }, [eyeState]);
+
+  // Environment Adaptation Logic
+  useEffect(() => {
+    if (environment === 'dark') {
       setTheme('dark');
-    } else if (environment === 'bright' && eyeState === 'relaxed') {
+    } else if (environment === 'bright' && latestEyeState.current === 'relaxed') {
       setTheme('light');
     }
-  }, [environment, eyeState]); // Intentionally not including theme to prevent infinite loops and allow manual toggles
+  }, [environment]); 
+
+  // Eye Strain Adaptation Logic
+  useEffect(() => {
+    if (eyeState === 'strained') {
+      setTheme('dark');
+    }
+    // Intentionally do nothing when eyeState becomes 'relaxed'.
+    // Dark mode should stay as it is until user changes it using toggle theme.
+  }, [eyeState]);
+
+  const handleThemeToggle = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme);
+    if (newTheme === 'light') {
+      resetEyeState();
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header theme={theme} setTheme={setTheme} environment={environment} />
+      <Header theme={theme} setTheme={handleThemeToggle} environment={environment} />
       <div className="flex flex-1 overflow-hidden">
         <main className="flex-1 p-6 overflow-y-auto">
           <WorkspaceGrid eyeState={eyeState} />
@@ -45,6 +67,7 @@ function App() {
         <Sidebar 
           environment={environment} 
           eyeState={eyeState} 
+          facePresence={facePresence}
           theme={theme}
           videoRef={videoRef}
           isInitializing={isInitializing}

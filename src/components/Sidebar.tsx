@@ -4,6 +4,7 @@ import { Settings, Camera, Loader2, Play } from 'lucide-react';
 interface SidebarProps {
   environment: 'bright' | 'dark';
   eyeState: 'relaxed' | 'strained';
+  facePresence: 'present' | 'missing';
   theme: 'light' | 'dark';
   videoRef: React.RefObject<HTMLVideoElement | null>;
   isInitializing: boolean;
@@ -15,13 +16,18 @@ interface ActionLog {
   id: number;
   timestamp: string;
   message: string;
-  type: 'dark' | 'bright' | 'strained' | 'relaxed';
+  type: 'dark' | 'bright' | 'strained' | 'relaxed' | 'missing' | 'present';
 }
 
-export default function Sidebar({ environment, eyeState, theme, videoRef, isInitializing, isReady, startEngine }: SidebarProps) {
+export default function Sidebar({ environment, eyeState, facePresence, theme, videoRef, isInitializing, isReady, startEngine }: SidebarProps) {
   const [logs, setLogs] = useState<ActionLog[]>([]);
 
   const initialEnvRef = useRef(true);
+  const latestEyeState = useRef(eyeState);
+  useEffect(() => {
+    latestEyeState.current = eyeState;
+  }, [eyeState]);
+
   // Monitor environment changes
   useEffect(() => {
     if (initialEnvRef.current) {
@@ -32,7 +38,11 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
     if (environment === 'dark') {
       setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Dark Mode', type: 'dark' as const }, ...prev].slice(0, 10));
     } else {
-      setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Light Mode', type: 'bright' as const }, ...prev].slice(0, 10));
+      if (latestEyeState.current === 'strained') {
+        setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Bright Env (Eye Protection Active)', type: 'strained' as const }, ...prev].slice(0, 10));
+      } else {
+        setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Light Mode', type: 'bright' as const }, ...prev].slice(0, 10));
+      }
     }
   }, [environment]);
 
@@ -50,6 +60,21 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
       setLogs(prev => [{ id: Date.now() + 1, timestamp: time, message: 'Restoring Media Content', type: 'relaxed' as const }, ...prev].slice(0, 10));
     }
   }, [eyeState]);
+
+  const initialFaceRef = useRef(true);
+  // Monitor face presence changes
+  useEffect(() => {
+    if (initialFaceRef.current) {
+      initialFaceRef.current = false;
+      return;
+    }
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (facePresence === 'missing') {
+      setLogs(prev => [{ id: Date.now() + 2, timestamp: time, message: "Where'd you go?? *Panic*", type: 'missing' as const }, ...prev].slice(0, 10));
+    } else {
+      setLogs(prev => [{ id: Date.now() + 2, timestamp: time, message: 'User Detected', type: 'present' as const }, ...prev].slice(0, 10));
+    }
+  }, [facePresence]);
 
   return (
     <aside className="w-80 border-l-4 border-black bg-[var(--card-bg)] p-6 overflow-y-auto flex flex-col gap-8">
@@ -101,7 +126,9 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
                       (log.type === 'dark' && environment === 'dark') ||
                       (log.type === 'bright' && environment === 'bright') ||
                       (log.type === 'strained' && eyeState === 'strained') ||
-                      (log.type === 'relaxed' && eyeState === 'relaxed');
+                      (log.type === 'relaxed' && eyeState === 'relaxed') ||
+                      (log.type === 'missing' && facePresence === 'missing') ||
+                      (log.type === 'present' && facePresence === 'present');
 
                     // Determine highlight color based on type
                     let borderColor = 'border-gray-600';
@@ -117,6 +144,10 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
                         borderColor = 'border-[var(--primary)]';
                         textColor = 'text-[var(--primary)]';
                         bgColor = 'bg-[var(--primary)]/10';
+                      } else if (log.type === 'missing' || log.type === 'present') {
+                        borderColor = 'border-red-500';
+                        textColor = 'text-red-500';
+                        bgColor = 'bg-red-500/10';
                       }
                     }
 
@@ -171,6 +202,7 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
             <div className="absolute top-2 right-2 flex gap-1 z-10">
               <span className={`w-2 h-2 rounded-full border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] ${environment === 'dark' ? 'bg-gray-600' : 'bg-yellow-400'}`} title="Brightness"></span>
               <span className={`w-2 h-2 rounded-full border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] ${eyeState === 'strained' ? 'bg-red-500' : 'bg-green-400'}`} title="Eye State"></span>
+              <span className={`w-2 h-2 rounded-full border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] ${facePresence === 'missing' ? 'bg-orange-500 animate-ping' : 'bg-blue-400'}`} title="Face Presence"></span>
             </div>
             <div className="absolute bottom-2 left-2 bg-black text-white px-2 py-0.5 text-[10px] font-bold border border-white uppercase opacity-70">
               Live Feed

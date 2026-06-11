@@ -7,6 +7,7 @@ export function useContextEngine() {
   
   const [environment, setEnvironment] = useState<'bright' | 'dark'>('bright');
   const [eyeState, setEyeState] = useState<'relaxed' | 'strained'>('relaxed');
+  const [facePresence, setFacePresence] = useState<'present' | 'missing'>('present');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(document.createElement('canvas'));
@@ -17,10 +18,19 @@ export function useContextEngine() {
   const strainStartTimeRef = useRef<number | null>(null);
   const darkStartTimeRef = useRef<number | null>(null);
   const brightStartTimeRef = useRef<number | null>(null);
+  const lastFaceSeenTimeRef = useRef<number | null>(null);
+  const strainedActiveTimeRef = useRef<number | null>(null);
   
   // To avoid rapid toggling, we keep state in refs to calculate durations
   const currentEnvRef = useRef<'bright' | 'dark'>('bright');
   const currentEyeRef = useRef<'relaxed' | 'strained'>('relaxed');
+  const currentFaceRef = useRef<'present' | 'missing'>('present');
+
+  const resetEyeState = useCallback(() => {
+    currentEyeRef.current = 'relaxed';
+    setEyeState('relaxed');
+    strainedActiveTimeRef.current = null;
+  }, []);
 
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -79,10 +89,20 @@ export function useContextEngine() {
         }
       }
 
-      // -- Feature B: Eye Strain Detection --
+      // -- Feature B: Eye Strain Detection & Face Presence --
       const results = landmarkerRef.current.detectForVideo(video, now);
       
+      if (lastFaceSeenTimeRef.current === null) {
+        lastFaceSeenTimeRef.current = now;
+      }
+
       if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+        lastFaceSeenTimeRef.current = now;
+        if (currentFaceRef.current !== 'present') {
+          currentFaceRef.current = 'present';
+          setFacePresence('present');
+        }
+
         const landmarks = results.faceLandmarks[0];
         
         const dist = (p1: any, p2: any) => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -106,14 +126,23 @@ export function useContextEngine() {
             if (currentEyeRef.current !== 'strained') {
               currentEyeRef.current = 'strained';
               setEyeState('strained');
+              strainedActiveTimeRef.current = now;
             }
           }
         } else {
           strainStartTimeRef.current = null;
-          // We intentionally do NOT revert eyeState back to 'relaxed' here.
-          // Since the UI adaptations (dimming media, switching to dark mode)
-          // cause the eyes to relax, reverting would re-introduce the harsh
-          // conditions and cause a feedback loop of strain.
+        }
+
+        // Auto-revert eye strain after 20 seconds
+        if (currentEyeRef.current === 'strained' && strainedActiveTimeRef.current && now - strainedActiveTimeRef.current > 20000) {
+          resetEyeState();
+        }
+      } else {
+        if (now - lastFaceSeenTimeRef.current > 3000) {
+          if (currentFaceRef.current !== 'missing') {
+            currentFaceRef.current = 'missing';
+            setFacePresence('missing');
+          }
         }
       }
     }
@@ -184,8 +213,10 @@ export function useContextEngine() {
     videoRef,
     environment,
     eyeState,
+    facePresence,
     isInitializing,
     isReady,
-    startEngine
+    startEngine,
+    resetEyeState
   };
 }
