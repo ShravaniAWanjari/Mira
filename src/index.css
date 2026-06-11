@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-color: #FFFAF0;
+    --text-color: #000000;
+    --border-color: #000000;
+    --shadow-color: #000000;
+    --primary: #FF6D00; /* Vibrant Orange */
+    --secondary: #FFEA00; /* Vibrant Yellow */
+    --card-bg: #FFFFFF;
+  }
+
+  .dark {
+    --bg-color: #1a1a1a;
+    --text-color: #FFFFFF;
+    --border-color: #000000;
+    --shadow-color: #000000;
+    --primary: #FF8F00;
+    --secondary: #FFD600;
+    --card-bg: #2C2C2C;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    /* Grid pattern for background */
+    background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dark body {
+    background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  }
+
+  /* Custom solid block scrollbar */
+  ::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-left: 3px solid var(--border-color);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--text-color);
+    border: 3px solid var(--border-color);
+  }
+  * {
+    scrollbar-color: var(--text-color) var(--bg-color);
+    scrollbar-width: auto;
+  }
+}
+
+@layer components {
+  .neo-border {
+    border: 4px solid var(--border-color);
+  }
+  
+  .neo-shadow {
+    box-shadow: 6px 6px 0px 0px var(--shadow-color);
+  }
+  
+  .neo-shadow-sm {
+    box-shadow: 3px 3px 0px 0px var(--shadow-color);
+  }
+
+  .neo-card {
+    border: 4px solid var(--border-color);
+    box-shadow: 6px 6px 0px 0px var(--shadow-color);
+    transition: all 0.2s;
+    background-color: var(--card-bg);
+  }
+
+  .neo-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px var(--shadow-color);
+  }
+
+  .neo-btn {
+    border: 4px solid var(--border-color);
+    box-shadow: 3px 3px 0px 0px var(--shadow-color);
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+    background-color: var(--primary);
+    color: #000;
+  }
+
+  .neo-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px 0px var(--shadow-color);
+  }
+
+  .neo-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px 0px var(--shadow-color);
+  }
+
+  .neo-btn-secondary {
+    border: 4px solid var(--border-color);
+    box-shadow: 3px 3px 0px 0px var(--shadow-color);
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+    background-color: var(--secondary);
+    color: #000;
+  }
+
+  .neo-btn-secondary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px 0px var(--shadow-color);
+  }
+
+  .neo-btn-secondary:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px 0px var(--shadow-color);
+  }
+
+  .neo-badge {
+    border: 4px solid var(--border-color);
+    box-shadow: 3px 3px 0px 0px var(--shadow-color);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #fff;
+    color: #000;
+    display: inline-block;
+  }
+}
