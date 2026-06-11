@@ -12,7 +12,7 @@ export default function Header({ theme, setTheme, environment }: HeaderProps) {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 bg-[var(--primary)] text-black neo-border px-4 py-2 font-black text-xl uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <LayoutDashboard size={24} />
-          <span>Mira Lite</span>
+          <span>Mira</span>
         </div>
         <div className="hidden md:flex gap-4 font-bold text-lg">
           <span className="neo-badge bg-[var(--secondary)]">

@@ -20,7 +20,7 @@ export default function ResearchNotesCard() {
         
         <textarea 
           className="flex-1 neo-border p-3 resize-none bg-white text-black font-medium focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow"
-          defaultValue="Mira Lite Prototype Notes:&#10;&#10;- Need to implement adaptive dark mode.&#10;- Ensure neo-brutalist theme pops with orange and yellow!&#10;- Verify custom scrollbars work."
+          defaultValue="Mira Prototype Notes:&#10;&#10;- Need to implement adaptive dark mode.&#10;- Ensure neo-brutalist theme pops with orange and yellow!&#10;- Verify custom scrollbars work."
         ></textarea>
         
         <div className="text-right text-xs font-bold text-gray-500 uppercase">

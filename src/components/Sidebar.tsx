@@ -30,9 +30,9 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
     }
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     if (environment === 'dark') {
-      setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Dark Mode', type: 'dark' }, ...prev].slice(0, 10));
+      setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Dark Mode', type: 'dark' as const }, ...prev].slice(0, 10));
     } else {
-      setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Light Mode', type: 'bright' }, ...prev].slice(0, 10));
+      setLogs(prev => [{ id: Date.now(), timestamp: time, message: 'Switching to Light Mode', type: 'bright' as const }, ...prev].slice(0, 10));
     }
   }, [environment]);
 
@@ -45,9 +45,9 @@ export default function Sidebar({ environment, eyeState, theme, videoRef, isInit
     }
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     if (eyeState === 'strained') {
-      setLogs(prev => [{ id: Date.now() + 1, timestamp: time, message: 'Dimming Media Content', type: 'strained' }, ...prev].slice(0, 10));
+      setLogs(prev => [{ id: Date.now() + 1, timestamp: time, message: 'Dimming Media Content', type: 'strained' as const }, ...prev].slice(0, 10));
     } else {
-      setLogs(prev => [{ id: Date.now() + 1, timestamp: time, message: 'Restoring Media Content', type: 'relaxed' }, ...prev].slice(0, 10));
+      setLogs(prev => [{ id: Date.now() + 1, timestamp: time, message: 'Restoring Media Content', type: 'relaxed' as const }, ...prev].slice(0, 10));
     }
   }, [eyeState]);
 
